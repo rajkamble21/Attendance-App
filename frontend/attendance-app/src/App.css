@@ -19,7 +19,9 @@
   align-items: center;
   justify-content: center;
   border: 1px solid black;
-  width: 350px;
+  border-radius: 20px;
+  padding: 20px;
+  width: 550px;
 }
 
 .form h3{
@@ -38,10 +40,11 @@
   margin: 5px;
 }
 
-.btn{
+.btn1{
   margin-top: 150px;
   margin-bottom: 20px;
 }
+
 
 .item{
   cursor: pointer;
@@ -49,18 +52,8 @@
 
 
 
-input {
-  width: 80%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-sizing: border-box; 
-}
 
-button {
-  cursor: pointer;
-}
+
 
 
 .hr {

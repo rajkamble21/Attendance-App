@@ -77,39 +77,44 @@ const Register = () => {
 
   return (
     <>
-      <div className="container">
-        <div className="form">
-          <h3>Register Page</h3>
-          <input
-            type="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="username"
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="password"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="email"
-          />
-          <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="phone number"
-          />
-          <div className="btn">
-          <button onClick={goToLogin}>Login</button>
-          <button onClick={handleRegister}>Register</button>
-          </div>
-        </div>
-      </div>
+      <div class="container">
+  <div class="form">
+    <h3>Register Page</h3>
+    <input
+      type="username"
+      class="form-control mb-3"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      placeholder="Username"
+    />
+    <input
+      type="password"
+      class="form-control mb-3"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      placeholder="Password"
+    />
+    <input
+      type="email"
+      class="form-control mb-3"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      placeholder="Email"
+    />
+    <input
+      type="text"
+      class="form-control mb-3"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+      placeholder="Phone Number"
+    />
+    <div class="btn">
+      <button class="btn btn-secondary mr-2" onClick={goToLogin}>Login</button>
+      <button class="btn btn-primary" onClick={handleRegister}>Register</button>
+    </div>
+  </div>
+</div>
+
     </>
   );
 };

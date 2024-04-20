@@ -50,23 +50,24 @@ const AllUsersList = () => {
 
   return (
     <>
-      <div className="container">
-        <div className="form">
-          <h1>User List</h1>
-          {userData ? (
-            <div>
-              {userData.map((user) => (
-                <div key={user._id} onClick={() => handleUserClick(user._id)}>
-                  <p className="item">{user.email}</p>
-                  <hr />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No user list available</p>
-          )}
-        </div>
+      <div class="container">
+  <div class="form">
+    <h1 class="text-center mb-4">User List</h1>
+    {userData ? (
+      <div>
+        {userData.map((user) => (
+          <div key={user._id} onClick={() => handleUserClick(user._id)} class="mb-3">
+            <p class="font-weight-bold text-primary item">{user.email}</p>
+            <hr class="my-2 border-primary" />
+          </div>
+        ))}
       </div>
+    ) : (
+      <p>No user list available</p>
+    )}
+  </div>
+</div>
+
     </>
   );
 };

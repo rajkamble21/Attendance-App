@@ -107,34 +107,34 @@ const Attendance = () => {
 
   return (
     <>
-      <div className="container">
-        <div className="form">
-          <h1>Attendance</h1>
-          <div>
-            <p>{currentDateTime.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-')}</p>
-            <p>{currentDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}</p>
-          </div>
-          <div>
-            {userData ? (
-              userData.ispresent ? (
-                <button onClick={handleSignOut}>signout</button>
-              ) : (
-                <button onClick={handleSignIn}>signin</button>
-              )
-            ) : (
-              <p>Loading</p>
-            )}
-          </div>
+      <div class="container">
+  <div class="form">
+    <h1 class="text-center mb-4">Attendance</h1>
+    <div class="text-center mb-4">
+      <p class="font-weight-bold">
+        {currentDateTime.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-')}
+      </p>
+      <p class="font-weight-bold">
+        {currentDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
+      </p>
+    </div>
+    <div class="text-center mb-4">
+      {userData ? (
+        userData.ispresent ? (
+          <button class="btn btn-danger" onClick={handleSignOut}>Sign Out</button>
+        ) : (
+          <button class="btn btn-success" onClick={handleSignIn}>Sign In</button>
+        )
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+    <div class="text-center">
+      <button class="btn btn-primary report" onClick={() => navigate('/attendancereport')}>View Report</button>
+    </div>
+  </div>
+</div>
 
-
-          <div className="btn">
-          <button onClick={()=>(navigate('/attendancereport'))} className="report">View Report</button>
-          </div>
-
-          
-          
-        </div>
-      </div>
     </>
   );
 };

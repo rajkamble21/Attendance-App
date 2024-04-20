@@ -10,7 +10,7 @@ const router = express.Router();
 
 
 
-
+//'59 23 * * *'
 cron.schedule('59 23 * * *', async () => {
     try {
         const users = await Attendance.find();
@@ -40,41 +40,6 @@ cron.schedule('59 23 * * *', async () => {
 });
 
 
-router.get('/attendance/absentee', async (req, res) => {
-    try {
-        // Manually trigger the cron job to run immediately
-        cron.schedule('* * * * *', async () => {
-            try {
-                const users = await Attendance.find();
-                const today = new Date().toISOString().split('T')[0];
-
-                users.forEach(async (user) => {
-                    const existingReport = user.record.find(report => report.signin && report.signin.toISOString().split('T')[0] === today);
-
-                    if (!existingReport) {
-                        user.record.push({
-                            signin: null,
-                            signout: null,
-                            ispresent: false,
-                        });
-                        await user.save();
-                    }
-                });
-
-                console.log('Cron job executed immediately');
-                res.status(200).json({ message: 'Cron job executed immediately' });
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({ message: 'Error executing cron job' });
-            }
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error triggering cron job' });
-    }
-});
-
 
 
 
@@ -97,6 +62,26 @@ router.get('/attendance/getuser/:id', verifyToken, async (req, res)=>{
     res.status(200).json(userAttendance);
 })
 
+
+router.put('/attendance/updateuser/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const { username, password, email, phone } = req.body;
+  
+    try {
+      const updatedUser = await Attendance.findByIdAndUpdate(id, { username, password, email, phone }, { new: true });
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+
 router.post('/attendance/signin/:id', verifyToken, async(req, res) => {
     const { id } = req.params;
     try {
@@ -107,7 +92,7 @@ router.post('/attendance/signin/:id', verifyToken, async(req, res) => {
 
         // Find today's report, if it exists
         const today = new Date().toISOString().split('T')[0]; // Get today's date in ISO format (YYYY-MM-DD)
-        const existingReport = userAttendance.record.find(report => report.signin.toISOString().split('T')[0] === today);
+        const existingReport = userAttendance.record.find(report => report.date.toISOString().split('T')[0] === today);
 
         // Update or create a new report for today
         if (existingReport) {
@@ -140,7 +125,7 @@ router.post('/attendance/signout/:id', verifyToken, async(req, res) => {
 
         // Find today's report, if it exists
         const today = new Date().toISOString().split('T')[0]; // Get today's date in ISO format (YYYY-MM-DD)
-        const existingReport = userAttendance.record.find(report => report.signout === null || report.signin.toISOString().split('T')[0] === today);
+        const existingReport = userAttendance.record.find(report =>  report.date.toISOString().split('T')[0] === today);
 
         // Update the signout time for today's report
         if (existingReport) {
