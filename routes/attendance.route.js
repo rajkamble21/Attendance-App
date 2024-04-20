@@ -3,9 +3,80 @@ const express = require("express");
 const verifyToken = require('../middlewares/token');
 const verifyAdmin = require('../middlewares/admin');
 const Attendance = require('../models/attendance.model');
+const cron = require('node-cron');
 
 
 const router = express.Router();
+
+
+
+
+cron.schedule('59 23 * * *', async () => {
+    try {
+        const users = await Attendance.find();
+
+        const today = new Date().toISOString().split('T')[0];
+
+        console.log(today);
+
+        users.forEach(async (user) => {
+            const existingReport = user.record.find(report => report.signin && report.signin.toISOString().split('T')[0] === today);
+
+            if (!existingReport) {
+                user.record.push({
+                    signin: null,
+                    signout: null,
+                    ispresent: false,
+                });
+                await user.save();
+            }
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}, {
+    scheduled: true, 
+    timezone: 'Asia/Kolkata' 
+});
+
+
+router.get('/attendance/absentee', async (req, res) => {
+    try {
+        // Manually trigger the cron job to run immediately
+        cron.schedule('* * * * *', async () => {
+            try {
+                const users = await Attendance.find();
+                const today = new Date().toISOString().split('T')[0];
+
+                users.forEach(async (user) => {
+                    const existingReport = user.record.find(report => report.signin && report.signin.toISOString().split('T')[0] === today);
+
+                    if (!existingReport) {
+                        user.record.push({
+                            signin: null,
+                            signout: null,
+                            ispresent: false,
+                        });
+                        await user.save();
+                    }
+                });
+
+                console.log('Cron job executed immediately');
+                res.status(200).json({ message: 'Cron job executed immediately' });
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Error executing cron job' });
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error triggering cron job' });
+    }
+});
+
+
+
 
 
 router.get('/attendance/allusers', verifyToken, verifyAdmin, async (req, res) => {
@@ -41,12 +112,16 @@ router.post('/attendance/signin/:id', verifyToken, async(req, res) => {
         // Update or create a new report for today
         if (existingReport) {
             existingReport.signin = new Date();
+            existingReport.ispresent = true;
         } else {
             userAttendance.record.push({
                 signin: new Date(),
+                ispresent: true,
             });
         }
+
         userAttendance.ispresent = true;
+
         await userAttendance.save();
         res.status(201).json({ message: 'Signed in successfully' });
     } catch (error) {

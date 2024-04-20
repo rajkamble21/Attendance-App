@@ -57,3 +57,12 @@ input {
   border-radius: 3px;
   box-sizing: border-box; 
 }
+
+button {
+  cursor: pointer;
+}
+
+
+.hr {
+  margin-bottom: 50px;
+}

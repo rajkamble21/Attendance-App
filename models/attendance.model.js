@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 
 const reportSchema = mongoose.Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  ispresent: {
+    type: Boolean,
+    default: false,
+  },
   signin: {
     type: Date,
   },
@@ -30,11 +38,11 @@ const attendanceSchema = mongoose.Schema({
     required: true,
     unique: false,
   },
-  isadmin: {
+  ispresent: {
     type: Boolean,
     default: false,
   },
-  ispresent: {
+  isadmin: {
     type: Boolean,
     default: false,
   },

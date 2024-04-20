@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 
 const AllUsersList = () => {
-
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(()=>{
+    if(!localStorage.getItem("token")){
+      enqueueSnackbar("Login First", { variant: "success" });
+      navigate('/login');
+    }
+  }, []);
+
 
   const [userData, setUserData] = useState(null);
   let token = localStorage.getItem("token");
+  if(!token){
+    navigate('/login');
+  }
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
@@ -40,7 +52,7 @@ const AllUsersList = () => {
     <>
       <div className="container">
         <div className="form">
-          <h1>Attendance Report</h1>
+          <h1>User List</h1>
           {userData ? (
             <div>
               {userData.map((user) => (
@@ -51,7 +63,7 @@ const AllUsersList = () => {
               ))}
             </div>
           ) : (
-            <p>No attendance data available</p>
+            <p>No user list available</p>
           )}
         </div>
       </div>

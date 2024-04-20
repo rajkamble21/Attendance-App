@@ -32,7 +32,11 @@ const Login = () => {
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
         enqueueSnackbar("Logedin Successfully", { variant: "success" });
-        navigate("/attendance");
+        if(response.data.user.isadmin){
+          navigate("/alluserslist");
+        }else{
+          navigate("/attendance");
+        }
       } else {
         console.log("Login failed");
       }

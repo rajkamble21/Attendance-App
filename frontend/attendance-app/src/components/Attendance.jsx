@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import { useSnackbar } from "notistack";
+
 
 const Attendance = () => {
-  const [userData, setUserData] = useState(null);
+
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
   let token = localStorage.getItem("token");
   let userId = localStorage.getItem("userId");
-  console.log("token", token);
-  console.log("userId", userId);
 
-  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(!localStorage.getItem("token")){
+      enqueueSnackbar("Login First", { variant: "success" });
+      navigate('/login');
+    }
+  }, []);
+
+
+  const [userData, setUserData] = useState(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+
+
+  
+
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +55,16 @@ const Attendance = () => {
       console.log("No token awailable");
     }
   }, [token, userId]);
+
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000); // Update every second
+  
+    return () => clearInterval(intervalId); // Clean up interval on unmount
+  }, []);
+  
 
 
   const handleSignIn = async () => {
@@ -73,24 +103,7 @@ const Attendance = () => {
     }
   };
 
-  const formatDate = (date) => {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
 
-  const formatTime = (date) => {
-    const hours = date.getHours() % 12 || 12; // Convert to 12-hour format
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const seconds = date.getSeconds().toString().padStart(2, "0");
-    const meridiem = date.getHours() < 12 ? "AM" : "PM";
-    return `${hours}:${minutes}:${seconds} ${meridiem}`;
-  };
-
-
-  const currentDate = formatDate(new Date());
-  const currentTime = formatTime(new Date());
 
   return (
     <>
@@ -98,8 +111,8 @@ const Attendance = () => {
         <div className="form">
           <h1>Attendance</h1>
           <div>
-            <p>{currentDate}</p>
-            <p>{currentTime}</p>
+            <p>{currentDateTime.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-')}</p>
+            <p>{currentDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}</p>
           </div>
           <div>
             {userData ? (
@@ -116,7 +129,6 @@ const Attendance = () => {
 
           <div className="btn">
           <button onClick={()=>(navigate('/attendancereport'))} className="report">View Report</button>
-          {userData && userData.isadmin ? <button onClick={()=>(navigate('/alluserslist'))} className="view_user">View users</button> : <></>}
           </div>
 
           
