@@ -98,6 +98,7 @@ router.post('/attendance/signin/:id', verifyToken, async(req, res) => {
         if (existingReport) {
             existingReport.signin = new Date();
             existingReport.ispresent = true;
+            existingReport.signout = null;
         } else {
             userAttendance.record.push({
                 signin: new Date(),

@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSnackbar } from "notistack";
 
 const Login = () => {
-  const { enqueueSnackbar } = useSnackbar();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
   const goToRegister = () => {
@@ -16,6 +14,13 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
+
+    if(!username || !password){
+      setUsernameError("Invalid username");
+      setPasswordError("Invalid password");
+      return
+    }
+
     try {
       const response = await axios.post("http://localhost:4000/v1/auth/login", {
         username,
@@ -28,44 +33,60 @@ const Login = () => {
         localStorage.setItem("userId", userId);
         const userData = JSON.stringify(response.data);
         localStorage.setItem("userData", userData);
-        enqueueSnackbar("Logedin Successfully", { variant: "success" });
         if (response.data.user.isadmin) {
           navigate("/alluserslist");
         } else {
           navigate("/attendance");
         }
-      } else {
-        console.log("Login failed");
       }
     } catch (error) {
-      enqueueSnackbar(error.response.data.message, { variant: "error" });
+      setUsernameError("");
+      setPasswordError("");
+      if (error.response.data.message) {
+        if (error.response.data.message === "Invalid username") {
+          setUsernameError("Invalid username");
+        } else if (error.response.data.message === "Invalid password") {
+          setPasswordError("Invalid password");
+        }
+      }
     }
   };
 
+  useEffect(() => {
+    setUsernameError("");
+    setPasswordError("");
+  }, [username, password]);
+
   return (
     <>
-      <div class="container">
-        <div class="form">
+      <div className="container">
+        <div className="form">
           <h3>Login Page</h3>
           <input
             type="username"
-            class="form-control mb-3"
+            className={`form-control mb-3 ${usernameError ? "is-invalid" : ""}`}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
           />
+          {usernameError && (
+            <div className="invalid-feedback">{usernameError}</div>
+          )}
           <input
             type="password"
-            class="form-control mb-3"
+            className={`form-control mb-3 ${passwordError ? "is-invalid" : ""}`}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
-          <div class="btn">
-            <button class="btn btn-primary mr-2" onClick={handleLogin}>
+          {passwordError && (
+            <div className="invalid-feedback">{passwordError}</div>
+          )}
+          <div className="btn">
+            <button className="btn btn-primary mr-2" onClick={handleLogin}>
               Login
             </button>
-            <button class="btn btn-secondary" onClick={goToRegister}>
+            <button className="btn btn-secondary" onClick={goToRegister}>
               Register
             </button>
           </div>

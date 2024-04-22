@@ -7,6 +7,11 @@ function AttendanceReport() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
+  // State for user data and pagination
+  const [userData, setUserData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 3; // Number of items per page
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       enqueueSnackbar("Login First", { variant: "success" });
@@ -14,7 +19,6 @@ function AttendanceReport() {
     }
   }, []);
 
-  const [userData, setUserData] = useState(null);
   let token = localStorage.getItem("token");
   let userId = localStorage.getItem("userId");
   let selectedUserId = localStorage.getItem("selectedUserId");
@@ -49,23 +53,32 @@ function AttendanceReport() {
     };
   }, []);
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * pageSize;
+  const indexOfFirstItem = indexOfLastItem - pageSize;
+  const currentItems = userData?.record.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <>
-      <div class="container">
-        <div class="form">
-          <h1 class="text-center mb-4">Attendance Report</h1>
-          {userData && userData.record.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-hover">
+      <div className="container-sm">
+        <h1 className="text-center m-5">Attendance Report</h1>
+        {currentItems && currentItems.length > 0 ? (
+          <div className="table-responsive">
+            <table className="table table-hover">
               <thead className="thead-dark">
-            <tr>
-              <th>Date</th>
-              <th>Sign In</th>
-              <th>Sign Out</th>
-            </tr>
-          </thead>
-          <tbody>
-                {userData.record.map((attendanceEntry, index) => (
+                <tr>
+                  <th>Date</th>
+                  <th>Sign In</th>
+                  <th>Sign Out</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((attendanceEntry, index) => (
                   <>
                     {attendanceEntry.ispresent ? (
                       <tr key={index} class="bg-light">
@@ -80,7 +93,6 @@ function AttendanceReport() {
                           )}
                         </td>
                         <td class="text-primary">
-                          Sign In -{" "}
                           {new Date(attendanceEntry.signin).toLocaleTimeString(
                             "en-US",
                             {
@@ -91,19 +103,20 @@ function AttendanceReport() {
                             }
                           )}
                         </td>
-                        {attendanceEntry.signout && (
-                          <td class="text-primary">
-                            Sign Out -{" "}
-                            {new Date(
+                        <td class="text-primary">
+                          {attendanceEntry.signout ? (
+                            new Date(
                               attendanceEntry.signout
                             ).toLocaleTimeString("en-US", {
                               hour: "2-digit",
                               minute: "2-digit",
                               second: "2-digit",
                               hour12: true,
-                            })}
-                          </td>
-                        )}
+                            })
+                          ) : (
+                            <>Pending</>
+                          )}
+                        </td>
                       </tr>
                     ) : (
                       <tr class="bg-light">
@@ -117,19 +130,64 @@ function AttendanceReport() {
                             }
                           )}
                         </td>
-                        <td class="text-danger">Sign In - Absent</td>
-                        <td class="text-danger">Sign Out - Absent</td>
+                        <td class="text-danger">Absent</td>
+                        <td class="text-danger">Absent</td>
                       </tr>
                     )}
                   </>
                 ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>No attendance data available</p>
-          )}
-        </div>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p>No attendance data available</p>
+        )}
+
+        {/* Pagination */}
+        <nav aria-label="..." className="m-5">
+          <ul className="pagination justify-content-center">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link"
+                onClick={() => paginate(currentPage - 1)}
+              >
+                Previous
+              </button>
+            </li>
+            {Array.from(
+              { length: Math.ceil(userData?.record.length / pageSize) },
+              (_, index) => index + 1
+            ).map((pageNumber) => (
+              <li
+                key={pageNumber}
+                className={`page-item ${
+                  currentPage === pageNumber ? "active" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => paginate(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              </li>
+            ))}
+            <li
+              className={`page-item ${
+                currentPage === Math.ceil(userData?.record.length / pageSize)
+                  ? "disabled"
+                  : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => paginate(currentPage + 1)}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </>
   );

@@ -13,12 +13,15 @@ const Navbar = () => {
   const handleProfileClick = () => {
     navigate("/profile");
   };
+  const handleLogin = async () => {
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
         <a className="navbar-brand" href="#">
-          Navbar
+          Attendance App
         </a>
         <button
           className="navbar-toggler"
@@ -33,7 +36,7 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            {token ? (
+            {token && (
               <>
                 <li className="nav-item">
                   <button
@@ -52,10 +55,6 @@ const Navbar = () => {
                   </button>
                 </li>
               </>
-            ) : (
-              <li className="nav-item">
-                <button className="btn btn-outline-success m-2">Login</button>
-              </li>
             )}
           </ul>
         </div>
