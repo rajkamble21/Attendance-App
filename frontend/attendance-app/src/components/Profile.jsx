@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
-
 const Profile = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [userData, setUserData] = useState(null);
@@ -49,7 +48,13 @@ const Profile = () => {
   }, [userId, token]);
 
   const handleUpdateProfile = async () => {
-    if (!editedUsername || !editedPassword || !editedEmail || !editedPhone || !editedConfirmPassword) {
+    if (
+      !editedUsername ||
+      !editedPassword ||
+      !editedEmail ||
+      !editedPhone ||
+      !editedConfirmPassword
+    ) {
       enqueueSnackbar("All fields are required", { variant: "error" });
       return;
     }
@@ -77,7 +82,6 @@ const Profile = () => {
     }
   };
 
-
   const closeModel = () => {
     setEditedUsername(userData.username);
     setEditedEmail(userData.email);
@@ -85,10 +89,7 @@ const Profile = () => {
     setEditedPassword(userData.password);
     setEditedConfirmPassword(userData.password);
     setModal(false);
-  }
-
-
-
+  };
 
   return (
     <div className="container-sm py-4">
@@ -96,26 +97,38 @@ const Profile = () => {
       {modal ? (
         <div className="card p-4">
           <div className="mb-3 row">
-            <label htmlFor="username" className="col-sm-1 col-form-label">
+            <label htmlFor="username" className="col-sm-2 col-form-label">
               Username
             </label>
-            <div className="col-sm-11">
+            <div className="col-sm-10">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  editedUsername === userData.username
+                    ? ""
+                    : editedUsername.length >= 6
+                    ? "is-valid"
+                    : "is-invalid"
+                }`}
                 id="username"
                 name="username"
                 value={editedUsername}
                 onChange={(e) => setEditedUsername(e.target.value)}
               />
+              {editedUsername !== userData.username &&
+                editedUsername.length < 8 && (
+                  <div className="invalid-feedback">
+                    Username must be at least 8 characters long.
+                  </div>
+                )}
             </div>
           </div>
 
           <div className="mb-3 row">
-            <label htmlFor="email" className="col-sm-1 col-form-label">
+            <label htmlFor="email" className="col-sm-2 col-form-label">
               Email
             </label>
-            <div className="col-sm-11">
+            <div className="col-sm-10">
               <input
                 type="email"
                 className="form-control"
@@ -127,25 +140,38 @@ const Profile = () => {
               />
             </div>
           </div>
+
           <div className="mb-3 row">
-            <label htmlFor="phone" className="col-sm-1 col-form-label">
+            <label htmlFor="phone" className="col-sm-2 col-form-label">
               Phone
             </label>
-            <div className="col-sm-11">
+            <div className="col-sm-10">
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${
+                  editedPhone === userData.phone
+                    ? ""
+                    : phoneRegex.test(editedPhone)
+                    ? "is-valid"
+                    : "is-invalid"
+                } `}
                 id="phone"
                 name="phone"
                 value={editedPhone}
                 onChange={(e) => setEditedPhone(e.target.value)}
               />
+              {editedPhone !== userData.phone &&
+                !phoneRegex.test(editedPhone) && (
+                  <div className="invalid-feedback">
+                    Invalid phone number. Please enter a 10-digit number.
+                  </div>
+                )}
             </div>
           </div>
 
           <div className="mb-3 row">
-            <div className="col-sm-1"></div>
-            <div className="col-sm-11">
+            <div className="col-sm-2"></div>
+            <div className="col-sm-10">
               <input
                 type="checkbox"
                 className="form-check-input p-2 m-2"
@@ -163,35 +189,78 @@ const Profile = () => {
           </div>
 
           <div className="mb-3 row">
-            <label htmlFor="password" className="col-sm-1 col-form-label">
+            <label htmlFor="password" className="col-sm-2 col-form-label">
               Password
             </label>
-            <div className="col-sm-11">
+            <div className="col-sm-10">
               <input
                 type="password"
-                className="form-control"
+                className={`form-control  ${
+                  editedPassword === userData.password
+                    ? ""
+                    : strongPasswordRegex.test(editedPassword)
+                    ? "is-valid"
+                    : "is-invalid"
+                }`}
                 id="password"
                 name="password"
                 value={editedPassword}
                 onChange={(e) => setEditedPassword(e.target.value)}
                 disabled={enablePassEdit}
               />
+              {editedPassword !== userData.password &&
+                !strongPasswordRegex.test(editedPassword) && (
+                  <div className="invalid-feedback">
+                    {!/(?=.*[a-z])/.test(editedPassword) && (
+                      <div>
+                        Password must contain at least one lowercase letter.
+                      </div>
+                    )}
+                    {!/(?=.*[A-Z])/.test(editedPassword) && (
+                      <div>
+                        Password must contain at least one uppercase letter.
+                      </div>
+                    )}
+                    {!/(?=.*\d)/.test(editedPassword) && (
+                      <div>Password must contain at least one number.</div>
+                    )}
+                    {!/(?=.*[@$!%*?&#])/.test(editedPassword) && (
+                      <div>
+                        Password must contain at least one special character.
+                      </div>
+                    )}
+                    {editedPassword.length < 8 && (
+                      <div>Password must be at least 8 characters long.</div>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
+
           <div className="mb-3 row">
-            <label htmlFor="password" className="col-sm-1 col-form-label">
+            <label htmlFor="password" className="col-sm-2 col-form-label">
               Confirm Password
             </label>
-            <div className="col-sm-11">
+            <div className="col-sm-10">
               <input
                 type="password"
-                className="form-control"
+                className={`form-control ${
+                  editedPassword === userData.password
+                    ? ""
+                    : editedPassword === editedConfirmPassword
+                    ? "is-valid"
+                    : "is-invalid"
+                }`}
                 id="password"
                 name="confirmPassword"
                 value={editedConfirmPassword}
                 onChange={(e) => setEditedConfirmPassword(e.target.value)}
                 disabled={enablePassEdit}
               />
+              {editedConfirmPassword !== editedPassword &&
+                editedPassword !== editedConfirmPassword && (
+                  <div className="invalid-feedback">Password does'nt match</div>
+                )}
             </div>
           </div>
 
@@ -199,10 +268,7 @@ const Profile = () => {
             <button className="btn btn-primary" onClick={handleUpdateProfile}>
               Save
             </button>
-            <button
-              className="btn btn-secondary"
-              onClick={closeModel}
-            >
+            <button className="btn btn-secondary" onClick={closeModel}>
               Cancel
             </button>
           </div>

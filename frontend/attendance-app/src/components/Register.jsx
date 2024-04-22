@@ -14,7 +14,6 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-
   const strongPasswordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,111 +61,127 @@ const Register = () => {
     <>
       <div class="container">
         <div class="form">
-          <h3>Register Page</h3>
-          <input
-            type="username"
-            className={`form-control mb-3 ${
-              username.length === 0
-                ? ""
-                : username.length >= 6
-                ? "is-valid"
-                : "is-invalid"
-            }`}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-          />
-          {username.length > 0 && username.length < 8 && (
-            <div className="invalid-feedback">
-              Username must be at least 8 characters long.
-            </div>
-          )}
+          <h3 className="mb-3">Register Page</h3>
+          <div className="mb-3 w-100">
+            <input
+              type="username"
+              className={`form-control ${
+                username.length === 0
+                  ? ""
+                  : username.length >= 6
+                  ? "is-valid"
+                  : "is-invalid"
+              }`}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+            />
+            {username.length > 0 && username.length < 8 && (
+              <div className="invalid-feedback">
+                Username must be at least 8 characters long.
+              </div>
+            )}
+          </div>
 
-          <input
-            type="email"
-            className={`form-control mb-3 ${
-              email.length === 0
-                ? ""
-                : emailRegex.test(email)
-                ? "is-valid"
-                : "is-invalid"
-            }`}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          {email.length > 0 && !emailRegex.test(email) && (
-            <div className="invalid-feedback">Invalid email address.</div>
-          )}
+          <div className="mb-3 w-100">
+            <input
+              type="email"
+              className={`form-control ${
+                email.length === 0
+                  ? ""
+                  : emailRegex.test(email)
+                  ? "is-valid"
+                  : "is-invalid"
+              }`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+            {email.length > 0 && !emailRegex.test(email) && (
+              <div className="invalid-feedback">Invalid email address.</div>
+            )}
+          </div>
 
-          <input
-            type="text"
-            className={`form-control mb-3 ${
-              phone.length === 0
-                ? ""
-                : phoneRegex.test(phone)
-                ? "is-valid"
-                : "is-invalid"
-            }`}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number"
-          />
-          {phone.length > 0 && !phoneRegex.test(phone) && (
-            <div className="invalid-feedback">
-              Invalid phone number. Please enter a 10-digit number.
-            </div>
-          )}
+          <div className="mb-3 w-100">
+            <input
+              type="text"
+              className={`form-control ${
+                phone.length === 0
+                  ? ""
+                  : phoneRegex.test(phone)
+                  ? "is-valid"
+                  : "is-invalid"
+              }`}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone Number"
+            />
+            {phone.length > 0 && !phoneRegex.test(phone) && (
+              <div className="invalid-feedback">
+                Invalid phone number. Please enter a 10-digit number.
+              </div>
+            )}
+          </div>
 
-          <input
-            type="password"
-            className={`form-control mb-3 ${
-              password.length === 0
-                ? ""
-                : strongPasswordRegex.test(password)
-                ? "is-valid"
-                : "is-invalid"
-            }`}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-          />
-          {password.length > 0 && !strongPasswordRegex.test(password) && (
-            <div className="invalid-feedback">
-              {!/(?=.*[a-z])/.test(password) && (
-                <div>Password must contain at least one lowercase letter.</div>
-              )}
-              {!/(?=.*[A-Z])/.test(password) && (
-                <div>Password must contain at least one uppercase letter.</div>
-              )}
-              {!/(?=.*\d)/.test(password) && (
-                <div>Password must contain at least one number.</div>
-              )}
-              {!/(?=.*[@$!%*?&#])/.test(password) && (
-                <div>Password must contain at least one special character.</div>
-              )}
-              {password.length < 8 && (
-                <div>Password must be at least 8 characters long.</div>
-              )}
-            </div>
-          )}
+          <div className="mb-3 w-100">
+            <input
+              type="password"
+              className={`form-control ${
+                password.length === 0
+                  ? ""
+                  : strongPasswordRegex.test(password)
+                  ? "is-valid"
+                  : "is-invalid"
+              }`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+            />
+            {password.length > 0 && !strongPasswordRegex.test(password) && (
+              <div className="invalid-feedback">
+                {!/(?=.*[a-z])/.test(password) && (
+                  <div>
+                    Password must contain at least one lowercase letter.
+                  </div>
+                )}
+                {!/(?=.*[A-Z])/.test(password) && (
+                  <div>
+                    Password must contain at least one uppercase letter.
+                  </div>
+                )}
+                {!/(?=.*\d)/.test(password) && (
+                  <div>Password must contain at least one number.</div>
+                )}
+                {!/(?=.*[@$!%*?&#])/.test(password) && (
+                  <div>
+                    Password must contain at least one special character.
+                  </div>
+                )}
+                {password.length < 8 && (
+                  <div>Password must be at least 8 characters long.</div>
+                )}
+              </div>
+            )}
+          </div>
 
-          <input
-            type="password"
-            className={`form-control mb-3 ${
-              confirmpassword.length === 0
-                ? ""
-                : password === confirmpassword
-                ? "is-valid"
-                : "is-invalid"
-            }`}
-            value={confirmpassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Password"
-          />
-          {confirmpassword.length > 0 && password !== confirmpassword && (
-            <div className="invalid-feedback">Password does'nt match</div>
-          )}
+          <div className="mb-3 w-100">
+            <input
+              type="password"
+              className={`form-control ${
+                confirmpassword.length === 0
+                  ? ""
+                  : password === confirmpassword
+                  ? "is-valid"
+                  : "is-invalid"
+              }`}
+              value={confirmpassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Password"
+            />
+            {confirmpassword.length > 0 && password !== confirmpassword && (
+              <div className="invalid-feedback">Password does'nt match</div>
+            )}
+          </div>
 
           <div class="btn">
             <button class="btn btn-secondary mr-2" onClick={goToLogin}>
