@@ -13,11 +13,7 @@ router.post('/auth/register', async(req, res)=>{
     } catch (error) {
         console.log(error);
         if (error.code === 11000) {
-            if (error.keyPattern.username) {
-                return res.status(409).json({ message: "Username already exists" });
-            }else if (error.keyPattern.password) {
-                return res.status(409).json({ message: "Password already exists" });
-            } else if (error.keyPattern.email) {
+            if (error.keyPattern.email) {
                 return res.status(409).json({ message: "Email already exists" });
             }
         }

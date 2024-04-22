@@ -140,7 +140,9 @@ function AttendanceReport() {
             </table>
           </div>
         ) : (
-          <p>No attendance data available</p>
+          <div class="alert alert-danger text-center" role="alert">
+            No attendance data available
+          </div>
         )}
 
         {/* Pagination */}

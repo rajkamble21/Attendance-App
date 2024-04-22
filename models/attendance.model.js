@@ -21,12 +21,10 @@ const attendanceSchema = mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
   },
   password: {
     type: String,
     required: true,
-    unique: true,
   },
   email: {
     type: String,
@@ -36,7 +34,6 @@ const attendanceSchema = mongoose.Schema({
   phone: {
     type: String,
     required: true,
-    unique: false,
   },
   ispresent: {
     type: Boolean,
