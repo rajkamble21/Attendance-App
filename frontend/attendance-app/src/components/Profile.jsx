@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSnackbar } from "notistack";
+
 
 const Profile = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [userData, setUserData] = useState(null);
   const [modal, setModal] = useState(false);
-  const [editedUserData, setEditedUserData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    email: "",
-    phone: "",
-  });
+  const [editedUsername, setEditedUsername] = useState("");
+  const [editedPassword, setEditedPassword] = useState("");
+  const [editedConfirmPassword, setEditedConfirmPassword] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [editedPhone, setEditedPhone] = useState("");
   const [enablePassEdit, setEnablePassEdit] = useState(true);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
+
+  const strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^\d{10}$/;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,7 +33,11 @@ const Profile = () => {
           }
         );
         setUserData(response.data);
-        setEditedUserData(response.data); // Set editedUserData to current user data
+        setEditedUsername(response.data.username);
+        setEditedEmail(response.data.email);
+        setEditedPhone(response.data.phone);
+        setEditedPassword(response.data.password);
+        setEditedConfirmPassword(response.data.password);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -38,16 +48,18 @@ const Profile = () => {
     }
   }, [userId, token]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedUserData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   const handleUpdateProfile = async () => {
+    if (!editedUsername || !editedPassword || !editedEmail || !editedPhone || !editedConfirmPassword) {
+      enqueueSnackbar("All fields are required", { variant: "error" });
+      return;
+    }
     try {
+      const editedUserData = {
+        username: editedUsername,
+        password: editedPassword,
+        email: editedEmail,
+        phone: editedPhone,
+      };
       const response = await axios.put(
         `http://localhost:4000/v1/attendance/updateuser/${userId}`,
         editedUserData,
@@ -58,12 +70,25 @@ const Profile = () => {
         }
       );
 
-      console.log("User updated:", response.data);
+      setUserData(response.data);
       setModal(false);
     } catch (error) {
       console.error("Error updating user:", error);
     }
   };
+
+
+  const closeModel = () => {
+    setEditedUsername(userData.username);
+    setEditedEmail(userData.email);
+    setEditedPhone(userData.phone);
+    setEditedPassword(userData.password);
+    setEditedConfirmPassword(userData.password);
+    setModal(false);
+  }
+
+
+
 
   return (
     <div className="container-sm py-4">
@@ -80,8 +105,8 @@ const Profile = () => {
                 className="form-control"
                 id="username"
                 name="username"
-                value={editedUserData.username}
-                onChange={handleInputChange}
+                value={editedUsername}
+                onChange={(e) => setEditedUsername(e.target.value)}
               />
             </div>
           </div>
@@ -96,8 +121,8 @@ const Profile = () => {
                 className="form-control"
                 id="email"
                 name="email"
-                value={editedUserData.email}
-                onChange={handleInputChange}
+                value={editedEmail}
+                onChange={(e) => setEditedEmail(e.target.value)}
                 disabled={true}
               />
             </div>
@@ -112,8 +137,8 @@ const Profile = () => {
                 className="form-control"
                 id="phone"
                 name="phone"
-                value={editedUserData.phone}
-                onChange={handleInputChange}
+                value={editedPhone}
+                onChange={(e) => setEditedPhone(e.target.value)}
               />
             </div>
           </div>
@@ -127,7 +152,9 @@ const Profile = () => {
                 id="gridCheck1"
                 name="checkbox"
                 value={enablePassEdit}
-                onClick={()=>{setEnablePassEdit(!enablePassEdit)}}
+                onClick={() => {
+                  setEnablePassEdit(!enablePassEdit);
+                }}
               />
               <label htmlFor="gridCheck1" className="col-form-label">
                 Do you want to edit password
@@ -145,8 +172,8 @@ const Profile = () => {
                 className="form-control"
                 id="password"
                 name="password"
-                value={editedUserData.password}
-                onChange={handleInputChange}
+                value={editedPassword}
+                onChange={(e) => setEditedPassword(e.target.value)}
                 disabled={enablePassEdit}
               />
             </div>
@@ -161,8 +188,8 @@ const Profile = () => {
                 className="form-control"
                 id="password"
                 name="confirmPassword"
-                value={editedUserData.confirmPassword}
-                onChange={handleInputChange}
+                value={editedConfirmPassword}
+                onChange={(e) => setEditedConfirmPassword(e.target.value)}
                 disabled={enablePassEdit}
               />
             </div>
@@ -174,7 +201,7 @@ const Profile = () => {
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => setModal(false)}
+              onClick={closeModel}
             >
               Cancel
             </button>
@@ -182,10 +209,14 @@ const Profile = () => {
         </div>
       ) : (
         <div className="card p-4">
-          <p className="mb-2">Username: {editedUserData.username}</p>
-          <p className="mb-2">Email: {editedUserData.email}</p>
-          <p className="mb-2">Phone: {editedUserData.phone}</p>
-          <p className="mb-2">Password: {editedUserData.password}</p>
+          {userData && (
+            <>
+              <p className="mb-2">Username: {userData.username}</p>
+              <p className="mb-2">Email: {userData.email}</p>
+              <p className="mb-2">Phone: {userData.phone}</p>
+              <p className="mb-2">Password: {userData.password}</p>
+            </>
+          )}
           <button className="btn btn-primary" onClick={() => setModal(true)}>
             Edit Profile
           </button>
